@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Solution {
+class 최댓값과_최솟값 {
     public String solution(String s) {
         String answer = "";
         String[] stringArray = s.split(" ");

@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Solution {
+class 최솟값_만들기 {
     public int solution(int []A, int []B) {
         int answer = 0;
         int length = A.length;

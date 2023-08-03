@@ -1,4 +1,4 @@
-class Solution {
+class JadenCase_문자열_만들기 {
     public String solution(String s) {
         String answer = "";
         StringBuilder sb = new StringBuilder();
