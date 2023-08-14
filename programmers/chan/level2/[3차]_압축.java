@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Solution {
+class [3차]_압축 {
     public int[] solution(String msg) {
         int[] answer;
         List<Integer> list = new ArrayList<>();
