@@ -1,6 +1,6 @@
 import java.util.*;
 
-class 야근_지수 {
+class Solution {
     public long solution(int n, int[] works) {
         long answer = 0;
         int sum = 0;
