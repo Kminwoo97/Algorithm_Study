@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+public class p18352 {
     static int[] distance;
 
     public static void main(String[] args) throws IOException {

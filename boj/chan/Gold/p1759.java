@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+public class p1759 {
     static List<String> answer = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
