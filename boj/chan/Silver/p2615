@@ -1,0 +1,103 @@
+package org.example.boj;
+
+import java.io.*;
+import java.util.*;
+
+public class p2615 {
+
+    static int[] dx = {0, 0, -1, 1, -1, 1, -1, 1};
+    static int[] dy = {-1, 1, 0, 0, -1, 1, 1, -1};
+
+    static int[][] arr;
+
+    static boolean[][] visited;
+
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        arr = new int[19][19];
+        for(int i=0; i<19; i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            for(int j=0; j<19; j++){
+                arr[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
+
+        ArrayList<int[]> list = new ArrayList<>();
+        for(int i=0; i<19; i++){
+            for(int j=0; j<19; j++){
+                //바둑알이 없다면 패스
+                if(arr[i][j] == 0)
+                    continue;
+
+                //[상 하], [좌 우], [좌상단 우하단], [좌하단, 우상단]
+                for(int k=0; k<8; k+=2){
+                    visited = new boolean[19][19];
+                    int rst = bfs(i, j, arr[i][j], k);
+
+                    //오목을 완성했으면 리스트에 추가한다.
+                    if(rst == 5){
+                        list.add(new int[]{i, j});
+                    }
+
+                }
+            }
+        }
+
+        //문제에 주어진대로 정렬을 한다. -> x값 기준으로 오름차순 정렬한다. 만약, x값이 같으면 y값을 기준으로 오름차순
+        Collections.sort(list, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if(o1[0] == o1[0])
+                    return o1[1] - o2[1];
+                return o1[0] - o1[0];
+            }
+        });
+
+        //리스트가 비어있지 않으면 오목이 완성됐다.
+        if (!list.isEmpty()) {
+            int x = list.get(0)[0];
+            int y = list.get(0)[1];
+            System.out.println(arr[x][y]);
+            System.out.println((x + 1) + " " + (y + 1));
+            return;
+        }
+        System.out.println(0);
+    }
+
+    public static int bfs(int x, int y, int target, int d){
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{x, y});
+        visited[x][y] = true;
+
+        int cnt = 1;
+
+        while (!q.isEmpty()) {
+            int[] node = q.poll();
+
+            int curX = node[0];
+            int curY = node[1];
+
+            for(int i=d; i<=d+1; i++){
+                int nx = curX + dx[i];
+                int ny = curY + dy[i];
+
+                if (nx < 0 || nx >= 19 || ny < 0 || ny >= 19)
+                    continue;
+
+                if(arr[nx][ny] == 0 || arr[nx][ny] != target)
+                    continue;
+
+                if(!visited[nx][ny]){
+                    visited[nx][ny] = true;
+                    cnt++;
+                    q.offer(new int[]{nx, ny});
+                }
+            }
+        }
+
+        return cnt;
+    }
+}
