@@ -40,53 +40,45 @@ class Solution {
         
         // 연산자 조합 정하기
         dfs(op, new StringBuilder(), new boolean[keys.size()]);
-        System.out.println(list.size());
 
         for (int i = 0; i < list.size(); i++) {
             String str = list.get(i);
             Map<Character, Integer> precedenceMap = new HashMap<>(); // 연산자, 우선순위
             Map<Integer, Integer> frequencyMap = new HashMap<>(); // 우선순위, 빈도
-            
             Stack<Long> operand = new Stack<>();
-            Stack<Character> operator = new Stack<>();
             
             for (int j = 0; j < str.length(); j++) {
                 precedenceMap.put(str.charAt(j), j);
-                frequencyMap.put(j, cnt.get(str.charAt(j)));
+                frequencyMap.put(j, cnt.get(str.charAt(j) + ""));
             }
+            
+            int first = 0;
             
             for (int j = 0; j < exp.length; j++) {
                 if (j % 2 == 0) {
-                    operand.push(Long.parseLong(exp[i]));
+                    operand.push(Long.parseLong(exp[j]));
                     
-                    boolean isFirst = true;
-                    
-                    while (!operator.isEmpty() && isFirst) {
-                        char peek = operator.peek();
-                        int value = precedenceMap.get(peek);
-
-                        // 우선순위 더 높은 연산자 남았는지 확인
-                        for (int k = 0; k < value; k++) {
-                            if (frequencyMap.get(k) > 0) {
-                                isFirst = false;
-                                break;
+                    if (j > 1) {
+                        for (int k = 0; k < j; k++) {
+                            if (k % 2 != 0 && precedenceMap.get(exp[k].charAt(0)) == first) {
+                                long operand1 = operand.pop();
+                                long operand2 = operand.pop();
+                                
+                                long sum = calc(exp[k].charAt(0), operand2, operand1);
+                                operand.push(sum);
+                                frequencyMap.put(first, frequencyMap.get(first) - 1);
+                                System.out.println(sum);
                             }
                         }
-
-                        if (isFirst) {
-                            long pop1 = operand.pop();
-                            long pop2 = operand.pop();
-
-                            long sum = calc(operator.pop(), pop2, pop1);
-                            operand.push(sum);
+                        
+                        if (frequencyMap.get(first) == 0) {
+                            first++;
                         }
                     }
-                } else {
-                    operator.push(exp[i].charAt(0));
-                }
+                }            
             }
             
-            answer = Math.max(answer, operand.pop());
+            answer = Math.max(answer, Math.abs(operand.pop()));
         }
         
         return answer;
