@@ -46,6 +46,7 @@ class Solution {
             Map<Character, Integer> precedenceMap = new HashMap<>(); // 연산자, 우선순위
             Map<Integer, Integer> frequencyMap = new HashMap<>(); // 우선순위, 빈도
             Stack<Long> operand = new Stack<>();
+            Stack<Character> operator = new Stack<>();
             
             for (int j = 0; j < str.length(); j++) {
                 precedenceMap.put(str.charAt(j), j);
@@ -59,23 +60,47 @@ class Solution {
                     operand.push(Long.parseLong(exp[j]));
                     
                     if (j > 1) {
-                        for (int k = 0; k < j; k++) {
-                            if (k % 2 != 0 && precedenceMap.get(exp[k].charAt(0)) == first) {
+                        while (!operator.isEmpty()) {
+                            char oper = operator.peek();
+                            long sum = 0;
+                            
+                            // 우선순위가 제일 위일때
+                            if (precedenceMap.get(oper) == first) {
+                                operator.pop();
                                 long operand1 = operand.pop();
                                 long operand2 = operand.pop();
+                                sum = calc(oper, operand1, operand2);
                                 
-                                long sum = calc(exp[k].charAt(0), operand2, operand1);
-                                operand.push(sum);
-                                frequencyMap.put(first, frequencyMap.get(first) - 1);
-                                System.out.println(sum);
+                                int remainCnt = frequencyMap.get(first);
+                                frequencyMap.put(first, remainCnt - 1);
+                                
+                                if (remainCnt == 1) {
+                                    first++;
+                                }
+                            } else {
+                                break;
                             }
-                        }
-                        
-                        if (frequencyMap.get(first) == 0) {
-                            first++;
+                            
+                            // operand 전부 비우고 다시 스택에 담기 
+                            Stack<Long> sub1 = new Stack<>();
+                            Stack<Long> sub2 = new Stack<>();
+                            
+                            sub1.push(sum);
+                            
+                            while (!operand.isEmpty()) {
+                                sub2.push(operand.pop());
+                            }
+                            
+                            while (!sub2.isEmpty()) {
+                                sub1.push(sub2.pop());
+                            }
+                            
+                            operand = sub1;
                         }
                     }
-                }            
+                } else {
+                    operator.push(exp[j].charAt(0));
+                }
             }
             
             answer = Math.max(answer, Math.abs(operand.pop()));
