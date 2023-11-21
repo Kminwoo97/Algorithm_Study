@@ -5,105 +5,74 @@ class Solution {
         
     public static long solution(String expression) {
         long answer = 0;
-        Set<Character> set = new HashSet<>();
         
         String[] nums = expression.split("[^0-9]+");
         String[] opers = expression.split("\\d+");
-        String[] exp = new String[nums.length + opers.length - 1];
-        int numIdx = 0;
-        int operIdx = 1;
-        int expIdx = 0;
         
-        while (expIdx < exp.length) {
-            if (expIdx % 2 == 0) {
-                exp[expIdx] = nums[numIdx++];
-            } else {
-                exp[expIdx] = opers[operIdx++];
-            }
-            
-            expIdx++;
-        }
-        
-        Map<String, Integer> cnt = new HashMap<>();
+        Set<String> set = new HashSet<>();
         
         for (int i = 1; i < opers.length; i++) {
-            cnt.put(opers[i], cnt.getOrDefault(opers[i], 0) + 1);
+            set.add(opers[i]);
         }
         
-        List<String> keys = new ArrayList<>(cnt.keySet());
-        String[] op = new String[keys.size()];
+        String[] op = new String[set.size()];
         int index = 0;
         
-        for (String key : keys) {
+        for (String key : set) {
             op[index++] = key;
         }
         
         // 연산자 조합 정하기
-        dfs(op, new StringBuilder(), new boolean[keys.size()]);
+        dfs(op, new StringBuilder(), new boolean[set.size()]);
 
         for (int i = 0; i < list.size(); i++) {
             String str = list.get(i);
-            Map<Character, Integer> precedenceMap = new HashMap<>(); // 연산자, 우선순위
-            Map<Integer, Integer> frequencyMap = new HashMap<>(); // 우선순위, 빈도
-            Stack<Long> operand = new Stack<>();
-            Stack<Character> operator = new Stack<>();
+            Map<Character, Integer> frequency = new HashMap<>();
             
+            // 우선순위 저장
             for (int j = 0; j < str.length(); j++) {
-                precedenceMap.put(str.charAt(j), j);
-                frequencyMap.put(j, cnt.get(str.charAt(j) + ""));
+                frequency.put(str.charAt(j), j);
+            }
+            
+            // 리스트 초기화
+            List<Long> operands = new ArrayList<>();
+            List<Character> operators = new ArrayList<>();
+            
+            for (int j = 0; j < nums.length; j++) {
+                operands.add(Long.parseLong(nums[j]));
+            }
+            
+            for (int j = 1; j < opers.length; j++) {
+                operators.add(opers[j].charAt(0));
             }
             
             int first = 0;
+            int idx = 0;
             
-            for (int j = 0; j < exp.length; j++) {
-                if (j % 2 == 0) {
-                    operand.push(Long.parseLong(exp[j]));
+            while (operators.size() > 0) {
+                char oper = operators.get(idx);
+                
+                // 우선순위 가장 높은 경우
+                if (frequency.get(oper) == first) {
+                    long operand1 = operands.get(idx);
+                    long operand2 = operands.get(idx + 1);
+                    long sum = calc(oper, operand1, operand2);
                     
-                    if (j > 1) {
-                        while (!operator.isEmpty()) {
-                            char oper = operator.peek();
-                            long sum = 0;
-                            
-                            // 우선순위가 제일 위일때
-                            if (precedenceMap.get(oper) == first) {
-                                operator.pop();
-                                long operand1 = operand.pop();
-                                long operand2 = operand.pop();
-                                sum = calc(oper, operand1, operand2);
-                                
-                                int remainCnt = frequencyMap.get(first);
-                                frequencyMap.put(first, remainCnt - 1);
-                                
-                                if (remainCnt == 1) {
-                                    first++;
-                                }
-                            } else {
-                                break;
-                            }
-                            
-                            // operand 전부 비우고 다시 스택에 담기 
-                            Stack<Long> sub1 = new Stack<>();
-                            Stack<Long> sub2 = new Stack<>();
-                            
-                            sub1.push(sum);
-                            
-                            while (!operand.isEmpty()) {
-                                sub2.push(operand.pop());
-                            }
-                            
-                            while (!sub2.isEmpty()) {
-                                sub1.push(sub2.pop());
-                            }
-                            
-                            operand = sub1;
-                        }
-                    }
+                    operands.add(idx, sum);
+                    operands.remove(idx + 1);
+                    operands.remove(idx + 1);
+                    operators.remove(idx);
                 } else {
-                    operator.push(exp[j].charAt(0));
+                    idx++;
+                }
+                
+                if (idx == operators.size()) {
+                    idx = 0;
+                    first++;
                 }
             }
             
-            answer = Math.max(answer, Math.abs(operand.pop()));
+            answer = Math.max(answer, Math.abs(operands.get(0)));
         }
         
         return answer;
