@@ -7,12 +7,13 @@ class Solution {
     public int[] solution(int[][] users, int[] emoticons) {
         answer = new int[2];
         
-        dfs(users, emoticons, new boolean[emoticons.length], new ArrayList<>());
+        dfs(users, emoticons, new boolean[emoticons.length], new ArrayList<>(), 0);
         
         return answer;
     }
     
-    public void dfs(int[][] users, int[] emoticons, boolean[] isVisited, List<Integer> prices) {
+    public void dfs(int[][] users, int[] emoticons, boolean[] isVisited, List<int[]> prices, int start) {
+    
         if (prices.size() == emoticons.length) {
             int userCount = 0;
             int totalSales = 0;
@@ -21,10 +22,10 @@ class Solution {
                 int sum = 0;
                 
                 for (int j = 0; j < prices.size(); j++) {
-                    int discountRate = prices.get(j);
+                    int[] price = prices.get(j);
                     
-                    if (users[i][0] <= discountRate) {
-                        sum += emoticons[j] - emoticons[j] * discountRate / 100;
+                    if (users[i][0] <= price[0]) {
+                        sum += price[1] - price[1] * price[0] / 100;
                     }
                 }
                 
@@ -47,14 +48,14 @@ class Solution {
             return;
         }
         
-        for (int i = 0; i < 4; i++) {
+        for (int i = start; i < 4; i++) {
             for (int j = 0; j < emoticons.length; j++) {
                 if (isVisited[j] == false) {
                     isVisited[j] = true;
-                    List<Integer> sub = new ArrayList<>(prices);
-                    sub.add(discountRate[i]);
+                    List<int[]> sub = new ArrayList<>(prices);
+                    sub.add(new int[]{discountRate[i], emoticons[j]});
                     
-                    dfs(users, emoticons, isVisited, sub);
+                    dfs(users, emoticons, isVisited, sub, i);
                     isVisited[j] = false;
                 }
             }
