@@ -17,16 +17,19 @@ class Solution {
         }
         
         boolean[] isVisited = new boolean[21];
+        
+        if (indices.size() > 0 && indices.get(0) == 0) {
+            indices.remove(0);
+        }
+        
         for (int index : indices) {
             isVisited[index] = true;
         }
         
         int trueCount = indices.size();
+        int right = 0;
         
-        if (indices.get(0) == 0) trueCount--;
-        
-        dfs(indices, isVisited, 0, indices.size() - 1, 0, name.length(), trueCount, 0);
-               
+        dfs(indices, isVisited, 0, indices.size() - 1, right, name.length(), trueCount, 0);
         return answer += min;
     }
 
@@ -35,7 +38,7 @@ class Solution {
             return;
         }
         
-        if (trueCount == 0) {
+        if (trueCount <= 0) {
             min = Math.min(min, sum);
             return;
         }
@@ -46,19 +49,26 @@ class Solution {
         if (isVisited[leftIndex] == true) {
             isVisited[leftIndex] = false;
             
-            System.out.println(cur + " " + leftIndex + " " + Math.min(len - leftIndex + cur, Math.abs(leftIndex - cur)));
-            dfs(indices, isVisited, leftIndex, (left + indices.size() - 1) % indices.size(), right, len, trueCount - 1, sum + Math.min(len - leftIndex + cur, leftIndex - cur));
+            int nextLeft = (left + indices.size() - 1) % indices.size();
+            int nextRight = (left + 1) % indices.size();
+            int nextSum = sum + Math.min(len - leftIndex + cur, Math.abs(leftIndex - cur));
+            
+            dfs(indices, isVisited, leftIndex, nextLeft, nextRight, len, trueCount - 1, nextSum);
             isVisited[leftIndex] = true;
         }
     
         // 오른쪽으로 이동
+        if (indices.get(right) == 0) right++;
         int rightIndex = indices.get(right);
         
         if (isVisited[rightIndex] == true) {
             isVisited[rightIndex] = false;
             
-            System.out.println("오른쪽이 = " + cur + " " + rightIndex + " " + Math.min(len - cur + rightIndex, Math.abs(rightIndex - cur)));
-            dfs(indices, isVisited, rightIndex, left, (right + 1) % indices.size(), len, trueCount - 1, sum + Math.min(len - cur + rightIndex, Math.abs(rightIndex - cur)));
+            int nextLeft = (right + indices.size() - 1) % indices.size();
+            int nextRight = (right + 1) % indices.size();
+            int nextSum = sum + Math.min(len - cur + rightIndex, Math.abs(rightIndex - cur));
+            
+            dfs(indices, isVisited, rightIndex, nextLeft, nextRight, len, trueCount - 1, nextSum);
             isVisited[rightIndex] = true;
         }
     }
