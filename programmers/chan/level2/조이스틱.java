@@ -16,9 +16,13 @@ class Solution {
             }
         }
         
-        boolean[] isVisited = new boolean[21];
+        boolean[] isVisited = new boolean[20];
         
-        if (indices.size() > 0 && indices.get(0) == 0) {
+        if (indices.size() == 0) {
+            return answer;
+        }
+        
+        if (indices.get(0) == 0) {
             indices.remove(0);
         }
         
@@ -26,49 +30,55 @@ class Solution {
             isVisited[index] = true;
         }
         
-        int trueCount = indices.size();
-        int right = 0;
-        
-        dfs(indices, isVisited, 0, indices.size() - 1, right, name.length(), trueCount, 0);
+        // 왼쪽
+        dfs(indices, isVisited, 0, indices.size() - 1, name.length(), 0);
+        // 오른쪽
+        dfs(indices, isVisited, 0, 0, name.length(), 0);
         return answer += min;
     }
 
-    public void dfs(List<Integer> indices, boolean[] isVisited, int cur, int left, int right, int len, int trueCount, int sum) {
+    public void dfs(List<Integer> indices, boolean[] isVisited, int curIndex, int cur, int len, int sum) {
         if (min < sum) {
             return;
         }
         
-        if (trueCount <= 0) {
+        boolean flag = true;
+        
+        for (int i = 0; i < isVisited.length; i++) {
+            if (isVisited[i] == true) {
+                flag = false;
+                break;
+            }
+        }
+        
+        if (flag) {
             min = Math.min(min, sum);
             return;
         }
         
         // 왼쪽으로 이동
-        int leftIndex = indices.get(left);
+        int next = (cur - 1 + indices.size()) % indices.size();
+        int leftIndex = indices.get(next);
         
+        int nextSum = sum + Math.min(len - leftIndex + curIndex, Math.abs(leftIndex - curIndex));
+            
         if (isVisited[leftIndex] == true) {
             isVisited[leftIndex] = false;
             
-            int nextLeft = (left + indices.size() - 1) % indices.size();
-            int nextRight = (left + 1) % indices.size();
-            int nextSum = sum + Math.min(len - leftIndex + cur, Math.abs(leftIndex - cur));
-            
-            dfs(indices, isVisited, leftIndex, nextLeft, nextRight, len, trueCount - 1, nextSum);
+            dfs(indices, isVisited, leftIndex, next, len, nextSum);
             isVisited[leftIndex] = true;
         }
     
         // 오른쪽으로 이동
-        if (indices.get(right) == 0) right++;
-        int rightIndex = indices.get(right);
+        next = (cur + 1) % indices.size();
+        int rightIndex = indices.get(next);
+        
+        nextSum = sum + Math.min(len - curIndex + rightIndex, Math.abs(rightIndex - curIndex));
         
         if (isVisited[rightIndex] == true) {
             isVisited[rightIndex] = false;
             
-            int nextLeft = (right + indices.size() - 1) % indices.size();
-            int nextRight = (right + 1) % indices.size();
-            int nextSum = sum + Math.min(len - cur + rightIndex, Math.abs(rightIndex - cur));
-            
-            dfs(indices, isVisited, rightIndex, nextLeft, nextRight, len, trueCount - 1, nextSum);
+            dfs(indices, isVisited, rightIndex, next, len, nextSum);
             isVisited[rightIndex] = true;
         }
     }
