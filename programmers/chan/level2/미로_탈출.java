@@ -19,7 +19,12 @@ class Solution {
         
         if (lDist != -1) {
             eDist = bfs(maps, lever, 'E');
-            answer = lDist + eDist;
+            
+            if (eDist == -1) {
+                answer = -1;
+            } else {
+                answer = lDist + eDist;
+            }
         }
         
         return answer;
@@ -32,10 +37,10 @@ class Solution {
         int[] moveX = {0, 0, -1, 1};
         int[] moveY = {-1, 1, 0, 0};
         int result = -1;
+        isVisited[start[0]][start[1]] = true;
         
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
-            isVisited[cur[0]][cur[1]] = true;
             
             if (maps[cur[0]].charAt(cur[1]) == destination) {
                 result = cur[2];
@@ -52,9 +57,10 @@ class Solution {
                 
                 if (nextY >= 0 && nextY < maps.length && 
                     nextX >= 0 && nextX < maps[0].length() &&
-                    (maps[nextY].charAt(nextX) == 'O' || maps[nextY].charAt(nextX) == destination) &&
+                    maps[nextY].charAt(nextX) != 'X' &&
                     isVisited[nextY][nextX] == false) {
                     
+                    isVisited[nextY][nextX] = true;
                     queue.add(new int[]{nextY, nextX, cur[2] + 1});
                 }
             }
