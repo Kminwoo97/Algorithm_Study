@@ -1,7 +1,7 @@
 import java.util.*;
 
 class Solution {
-    static Set<String> set = new HashSet<>();
+    static long ans = 0;
     
     public long solution(int k, int d) {
         long answer = 0;
@@ -10,21 +10,15 @@ class Solution {
             find(i, k, d);
         }
         
-        return answer = set.size();
+        return answer = ans;
     }
                 
-    public int[] find(int a, int k, int d) {
-        int[] result = new int[2];
-        
+    public void find(int a, int k, int d) {
         double kExp = Math.pow(k, 2);
         double b = Math.sqrt(Math.pow(d, 2) / kExp - Math.pow(a, 2));
-        int intB = (int) b;
-        
-        if (b == intB) {
-            set.add(a + "," + intB);
-            System.out.println(a + " " + intB);
+        if (b >= 0.0) {
+            ans += ((int) b + 1);
         }
-        
-        return result;
+            
     }
 }
