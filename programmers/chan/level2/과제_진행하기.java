@@ -42,8 +42,12 @@ class Solution {
                                 stack.push(pre2);
                                 remainTime = 0;
                             } else {
+                                // 남은 작업 처리한 경우
+                                ans.add(pre2.name);
                                 remainTime -= pre2.playTime;
                             }
+                        } else {
+                            break;
                         }
                     }
                 }
