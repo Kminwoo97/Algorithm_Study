@@ -1,31 +1,56 @@
 import java.util.*;
 
 class Solution {
+    static List<Set<Integer>> list = new ArrayList<>();
+    static int result = 0;
+    
     public int solution(String[][] relation) {
         int answer = 0;
-        Map<String, Integer> map = new HashMap<>();
         
-        for (int i = 0; i < relation.length; i++) {
-            dfs(map, relation[i], new StringBuilder(), 0);
+        for (int i = 0; i < relation[0].length; i++) {
+            dfs(relation, new HashSet<>(), i + 1, 0, 0);
         }
         
-        List<String> keys = new ArrayList<>(map.keySet());
-        
-        for (String key : keys) {
-            if (map.get(key) != 1) {
-                answer++;
-            }
-        }
-        
-        return answer;
+        return answer = result;
     }
     
-    public void dfs(Map<String, Integer> map, String[] tuple, StringBuilder sb, int start) {
-        for (int i = start; i < tuple.length; i++) {
-            StringBuilder sub = new StringBuilder(sb);
-            sub.append(tuple[i]);
-            map.put(sub.toString(), map.getOrDefault(sub.toString(), 0) + 1);
-            dfs(map, tuple, sub, i + 1);
+    public void dfs(String[][] relation, Set<Integer> set, int count, int depth, int start) {
+        if (depth == count) {
+            // 유일성 검사
+            List<String> keys = new ArrayList<>();
+            
+            for (int i = 0; i < relation.length; i++) {
+                StringBuilder sb = new StringBuilder();
+                
+                for (int el : set) {
+                    sb.append(relation[i][el]);
+                }
+                
+                if (!keys.contains(sb.toString())) {
+                    keys.add(sb.toString());
+                } else {
+                    return;
+                }
+            }
+            
+            // 최소성 검사
+            for (Set<Integer> key : list) {
+                if (set.containsAll(key)) {
+                    return;
+                }
+            }
+            
+            list.add(set);
+            result++;
+            
+            return;
+        }
+        
+        for (int i = start; i < relation[0].length; i++) {
+            Set<Integer> sub = new HashSet<>(set);
+            sub.add(i);
+            
+            dfs(relation, sub, count, depth + 1, i + 1);
         }
     }
 }
