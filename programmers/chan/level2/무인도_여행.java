@@ -1,8 +1,8 @@
 import java.util.*;
 
 class Solution {
-    static int[] moveY = {-1, 1, 0, 0}; // 상하좌우
     static int[] moveX = {0, 0, -1, 1};
+    static int[] moveY = {-1, 1, 0, 0};
     
     public int[] solution(String[] maps) {
         int[] answer = {};
@@ -12,13 +12,14 @@ class Solution {
         for (int i = 0; i < maps.length; i++) {
             for (int j = 0; j < maps[0].length(); j++) {
                 if (isVisited[i][j] == false && maps[i].charAt(j) != 'X') {
-                    list.add(bfs(maps, isVisited, i, j));
+                    list.add(bfs(maps, isVisited, new int[]{i, j, (int) maps[i].charAt(j) - 48}));
                 }
             }
         }
         
         if (list.size() == 0) {
-            answer = new int[]{-1};
+            answer = new int[1];
+            answer[0] = -1;
         } else {
             Collections.sort(list);
             answer = new int[list.size()];
@@ -31,31 +32,31 @@ class Solution {
         return answer;
     }
     
-    public int bfs(String[] maps, boolean[][] isVisited, int y, int x) {
-        isVisited[y][x] = true;
+    public int bfs(String[] maps, boolean[][] isVisited, int[] start) {
+        int result = 0;
         Queue<int[]> queue = new LinkedList<>();
-        int sum = 0;
-        
-        queue.offer(new int[]{y, x});
+        queue.add(start);
+        isVisited[start[0]][start[1]] = true;
         
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
-            
-            sum += (int) (maps[cur[0]].charAt(cur[1]) - 48);
+            result += cur[2];
             
             for (int i = 0; i < 4; i++) {
                 int nextY = cur[0] + moveY[i];
                 int nextX = cur[1] + moveX[i];
                 
-                if (nextY >= 0 && nextY < maps.length && nextX >= 0 && nextX < maps[0].length() &&
-                    isVisited[nextY][nextX] == false && maps[nextY].charAt(nextX) != 'X') {
-                    isVisited[nextY][nextX] = true;
+                if (nextY >= 0 && nextY < maps.length &&
+                    nextX >= 0 && nextX < maps[0].length() &&
+                    maps[nextY].charAt(nextX) != 'X' &&
+                    isVisited[nextY][nextX] == false) {
                     
-                    queue.offer(new int[]{nextY, nextX});
+                    isVisited[nextY][nextX] = true;
+                    queue.add(new int[]{nextY, nextX, maps[nextY].charAt(nextX) - 48});
                 }
             }
         }
         
-        return sum;
+        return result;
     }
 }
