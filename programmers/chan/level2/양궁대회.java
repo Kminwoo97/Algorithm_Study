@@ -28,7 +28,11 @@ class Solution {
         return answer;
     }
     
-    public void dfs(int[] info, int n, int count, int start, int apeachScore, int lionScore, List<int[]> list) {   
+    public void dfs(int[] info, int n, int count, int start, int apeachScore, int lionScore, List<int[]> list) {
+        if (start == 11) {
+            return;
+        }
+        
         if (count == n) {
             if (max <= lionScore - apeachScore) {
                 max = lionScore - apeachScore;
@@ -38,22 +42,14 @@ class Solution {
             return;
         }
         
-        for (int i = start; i < 11; i++) {
-            // 1. 해당 점수에 화살 쏘는 경우
-            // 어피치가 i 점에 맞춘 화살 있는 경우
-            if (info[i] != 0) {
-                // 어피치가 쏜 화살보다 한 발 많은 수 = 라이언이 점수 획득 가능한 경우
-                if (count + info[i] + 1 <= n) {
-                    // System.out.println(count + info[i] + 1);
-                    List<int[]> sub = new ArrayList<>(list);
-                    sub.add(new int[]{i, info[i] + 1});
-                    dfs(info, n, count + info[i] + 1, start + 1, apeachScore, lionScore + (10 - i), sub);
-                } else {
-                    dfs(info, n, count, start + 1, apeachScore + (10 - i), lionScore, list);
-                }
-            } else {
-                
-            }
+        // 1. 해당 점수에 화살 쏘는 경우
+        if (count + info[start] + 1 <= n) {
+            List<int[]> sub = new ArrayList<>(list);
+            sub.add(new int[]{start, info[start] + 1});
+            dfs(info, n, count + info[start] + 1, start + 1, apeachScore, lionScore + 10 - start, sub);
         }
+
+        // 2. 해당 점수에 쏘지 않는 경우
+        dfs(info, n, count, start + 1, apeachScore + 10 - start, lionScore, list);
     }
 }
