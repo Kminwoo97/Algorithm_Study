@@ -1,42 +1,61 @@
 import java.util.*;
 
 class Solution {
-    static int max = 0;
+    static int max = 1;
     static List<int[]> ans = new ArrayList<>();
     
     public int[] solution(int n, int[] info) {
-        int[] answer = {};
+        int[] answer = new int[11];
         
         dfs(info, n, 0, 0, 0, 0, new ArrayList<>());
         
-        // 라이언이 못 이기는 경우
-        if (ans.size() == 0) {
-            answer = new int[1];
-            answer[0] = -1;
-        } else {
-            answer = new int[11];
-        
-            for (int i = 0; i < ans.size(); i++) {
-                int idx = ans.get(i)[0];
-                int value = ans.get(i)[1];
-
-                answer[idx] = value;
-            }
+        for (int i = 0; i < ans.size(); i++) {
+            int[] value = ans.get(i);
+            answer[value[0]] = value[1];
         }
         
+        // 라이언 못 이기는 경우
+        if (ans.size() == 0) {
+            answer = new int[]{-1};
+        }
         
         return answer;
     }
     
     public void dfs(int[] info, int n, int count, int start, int apeachScore, int lionScore, List<int[]> list) {
-        if (start == 11) {
-            return;
-        }
         
-        if (count == n) {
-            if (max <= lionScore - apeachScore) {
-                max = lionScore - apeachScore;
+        if (start == 11) {
+            int diff = lionScore - apeachScore;
+            
+            if (count < n) {
+                list.add(new int[]{10, n - count});
+                count = n;
+            }
+            
+            if (max < diff) {
+                max = diff;
                 ans = list;
+                
+                return;
+            } 
+            
+            if (max == diff) {
+                max = diff;
+                
+                if (ans.size() == 0) {
+                    ans = list;
+                } else {
+                    int[] value1 = ans.get(ans.size() - 1);
+                    int[] value2 = list.get(list.size() - 1);
+                    
+                    if (value1[0] < value2[0]) {
+                        ans = list;
+                    } else if (value1[0] == value2[0]) {
+                        if (value1[1] < value2[1]) {
+                            ans = list;
+                        }
+                    }
+                }
             }
             
             return;
@@ -50,6 +69,11 @@ class Solution {
         }
 
         // 2. 해당 점수에 쏘지 않는 경우
-        dfs(info, n, count, start + 1, apeachScore + 10 - start, lionScore, list);
+        // 2-1. 어피치 점수 획득한 경우 
+        if (info[start] > 0) {
+            dfs(info, n, count, start + 1, apeachScore + 10 - start, lionScore, list);
+        } else {
+            dfs(info, n, count, start + 1, apeachScore, lionScore, list);
+        }
     }
 }
