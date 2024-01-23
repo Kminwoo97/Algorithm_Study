@@ -3,30 +3,32 @@ import java.util.*;
 class Solution {
     public long solution(int[] weights) {
         long answer = 0;
-        Map<Integer, Integer> person = new HashMap<>();
-        Map<Integer, Integer> multi = new HashMap<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        Map<Integer, Integer> weightsMap = new HashMap<>();
         
         for (int i = 0; i < weights.length; i++) {
-            int dupledPerson = person.getOrDefault(weights[i], 0); // 몸무게 중복인 사람의 수
-            int m2 = weights[i] * 2;
-            int m3 = weights[i] * 3;
-            int m4 = weights[i] * 4;
+            int doubleW = weights[i] * 2;
+            int tripleW = weights[i] * 3;
+            int quadrupleW = weights[i] * 4;
             
-            if (dupledPerson > 0) {
-                answer += dupledPerson;
-                answer += multi.getOrDefault(m2, 0) - dupledPerson;
-                answer += multi.getOrDefault(m3, 0) - dupledPerson;
-                answer += multi.getOrDefault(m4, 0) - dupledPerson;
-            } else {
-                answer += multi.getOrDefault(m2, 0);
-                answer += multi.getOrDefault(m3, 0);
-                answer += multi.getOrDefault(m4, 0);
+            // 몸무게 같은 경우
+            if (weightsMap.containsKey(weights[i])) {
+                int value = weightsMap.get(weights[i]);
+                answer += value;
+                answer += map.getOrDefault(doubleW, 0) - value;
+                answer += map.getOrDefault(tripleW, 0) - value;
+                answer += map.getOrDefault(quadrupleW, 0) - value;
+                
+            } else {                
+                answer += map.getOrDefault(doubleW, 0);
+                answer += map.getOrDefault(tripleW, 0);
+                answer += map.getOrDefault(quadrupleW, 0);
             }
             
-            person.put(weights[i], person.getOrDefault(weights[i], 0) + 1);
-            multi.put(m2, multi.getOrDefault(m2, 0) + 1);
-            multi.put(m3, multi.getOrDefault(m3, 0) + 1);
-            multi.put(m4, multi.getOrDefault(m4, 0) + 1);
+            weightsMap.put(weights[i], weightsMap.getOrDefault(weights[i], 0) + 1);
+            map.put(doubleW, map.getOrDefault(doubleW, 0) + 1);
+            map.put(tripleW, map.getOrDefault(tripleW, 0) + 1);
+            map.put(quadrupleW, map.getOrDefault(quadrupleW, 0) + 1);
         }
         
         return answer;
