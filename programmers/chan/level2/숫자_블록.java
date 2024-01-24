@@ -22,7 +22,15 @@ class Solution {
         
         for (int i = 2; i <= Math.sqrt(n); i++) {
             if (n % i == 0) {
-                result = Math.max(result, n / i);
+                int quot = n / i;
+                
+                // 천만까지의 숫자가 적힌 블럭까지만 사용
+                if (quot > 10000000) {
+                    result = i;
+                } else {
+                    result = quot;
+                    break;
+                }
             }
         }
         
