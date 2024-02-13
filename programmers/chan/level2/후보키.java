@@ -1,23 +1,24 @@
 import java.util.*;
 
 class Solution {
-    static List<Set<Integer>> list = new ArrayList<>();
-    static int result = 0;
+    static List<Set<Integer>> ans = new ArrayList<>();
     
     public int solution(String[][] relation) {
         int answer = 0;
         
         for (int i = 0; i < relation[0].length; i++) {
-            dfs(relation, new HashSet<>(), i + 1, 0, 0);
+            // i + 1 개를 조합해서 만들 수 있는 키의 조합 구하기
+            dfs(relation, new HashSet<>(), 0, i + 1, 0);
         }
         
-        return answer = result;
+        return answer = ans.size();
     }
     
-    public void dfs(String[][] relation, Set<Integer> set, int count, int depth, int start) {
-        if (depth == count) {
+    public void dfs(String[][] relation, Set<Integer> set, int start, int count, int depth) {
+        
+        if (count == depth) {
             // 유일성 검사
-            List<String> keys = new ArrayList<>();
+            List<String> list = new ArrayList<>();
             
             for (int i = 0; i < relation.length; i++) {
                 StringBuilder sb = new StringBuilder();
@@ -26,31 +27,28 @@ class Solution {
                     sb.append(relation[i][el]);
                 }
                 
-                if (!keys.contains(sb.toString())) {
-                    keys.add(sb.toString());
-                } else {
+                if (list.contains(sb.toString())) {
                     return;
                 }
+                
+                list.add(sb.toString());
             }
             
             // 최소성 검사
-            for (Set<Integer> key : list) {
-                if (set.containsAll(key)) {
+            for (Set st : ans) {
+                if (set.containsAll(st)) {
                     return;
                 }
             }
             
-            list.add(set);
-            result++;
-            
-            return;
+            ans.add(set);
         }
         
         for (int i = start; i < relation[0].length; i++) {
             Set<Integer> sub = new HashSet<>(set);
             sub.add(i);
             
-            dfs(relation, sub, count, depth + 1, i + 1);
+            dfs(relation, sub, i + 1, count, depth + 1);
         }
     }
 }
