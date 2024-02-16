@@ -3,48 +3,36 @@ import java.util.*;
 class Solution {
     public int solution(int[] priorities, int location) {
         int answer = 0;
-        Queue<Process> queue = new LinkedList<>();
+        Queue<int[]> q = new LinkedList<>();
         
         for (int i = 0; i < priorities.length; i++) {
-            queue.offer(new Process(i, priorities[i]));
+            q.add(new int[]{i, priorities[i]});
         }
         
-        while (!queue.isEmpty()) {
-            Process cur = queue.poll();
+        int cnt = 0;
+        
+        while (!q.isEmpty()) {
+            int[] pre = q.poll();
             boolean isFirst = true;
             
-            for (Process next : queue) {
-                if (cur.priority < next.priority) {
-                    queue.offer(cur);
-                    
-                    while (next.num != queue.peek().num) {
-                        queue.offer(queue.poll());
-                    }
-                    
+            for (int[] cur : q) {
+                if (pre[1] < cur[1]) {
+                    q.add(pre);
                     isFirst = false;
                     break;
-                } 
+                }
             }
             
-            if (isFirst == true) {
-                answer++;
-
-                if (cur.num == location) {
+            if (isFirst) {
+                cnt++;
+                
+                if (pre[0] == location) {
+                    answer = cnt;
                     break;
-                }
+                }                
             }
         }
         
         return answer;
-    }
-}
-
-class Process {
-    int num;
-    int priority;
-    
-    Process (int num, int priority) {
-        this.num = num;
-        this.priority = priority;
     }
 }
